@@ -1,17 +1,10 @@
 package org.agoncal.application.petstore.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
-import javax.validation.constraints.Min;
 import java.io.Serializable;
+import java.util.Objects;
+
+import javax.persistence.*;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table(name = "order_line")
@@ -19,7 +12,7 @@ public class OrderLine implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Id
@@ -39,7 +32,7 @@ public class OrderLine implements Serializable
    private Item item;
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public OrderLine()
@@ -53,7 +46,7 @@ public class OrderLine implements Serializable
    }
 
    // ======================================
-   // =          Business methods          =
+   // = Business methods =
    // ======================================
 
    public Float getSubTotal()
@@ -62,7 +55,7 @@ public class OrderLine implements Serializable
    }
 
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public Long getId()
@@ -106,50 +99,35 @@ public class OrderLine implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
 
    @Override
-   public boolean equals(Object obj)
+   public final boolean equals(Object o)
    {
-      if (this == obj)
-      {
+      if (this == o)
          return true;
-      }
-      if (!(obj instanceof OrderLine))
-      {
+      if (!(o instanceof OrderLine))
          return false;
-      }
-      OrderLine other = (OrderLine) obj;
-      if (id != null)
-      {
-         if (!id.equals(other.id))
-         {
-            return false;
-         }
-      }
-      return true;
+      OrderLine orderLine = (OrderLine) o;
+      return Objects.equals(quantity, orderLine.quantity) &&
+               Objects.equals(item, orderLine.item);
    }
 
    @Override
-   public int hashCode()
+   public final int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
+      return Objects.hash(quantity, item);
    }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (id != null)
-         result += "id: " + id;
-      result += ", version: " + version;
-      if (quantity != null)
-         result += ", quantity: " + quantity;
-      return result;
+      return "OrderLine{" +
+               "id=" + id +
+               ", version=" + version +
+               ", quantity=" + quantity +
+               ", item=" + item +
+               '}';
    }
-
 }

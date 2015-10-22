@@ -1,24 +1,26 @@
 package org.agoncal.application.petstore.model;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Table(name = "purchase_order")
 @XmlRootElement
-@NamedQueries( {
-      @NamedQuery(name = PurchaseOrder.FIND_ALL, query = "SELECT o FROM PurchaseOrder o")
+@NamedQueries({
+         @NamedQuery(name = PurchaseOrder.FIND_ALL, query = "SELECT o FROM PurchaseOrder o")
 })
 public class PurchaseOrder implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Id
@@ -58,10 +60,9 @@ public class PurchaseOrder implements Serializable
    @JoinColumn(name = "customer_fk", nullable = false)
    private Customer customer;
 
-   @OneToMany//TODO (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-   @JoinTable(name = "t_order_order_line",
-         joinColumns = {@JoinColumn(name = "order_fk")},
-         inverseJoinColumns = {@JoinColumn(name = "order_line_fk")})
+   @OneToMany // TODO (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   @JoinTable(name = "t_order_order_line", joinColumns = { @JoinColumn(name = "order_fk") }, inverseJoinColumns = {
+            @JoinColumn(name = "order_line_fk") })
    private Set<OrderLine> orderLines = new HashSet<OrderLine>();
 
    @Embedded
@@ -73,13 +74,13 @@ public class PurchaseOrder implements Serializable
    private CreditCard creditCard = new CreditCard();
 
    // ======================================
-   // =             Constants              =
+   // = Constants =
    // ======================================
 
    public static final String FIND_ALL = "Order.findAll";
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public PurchaseOrder()
@@ -94,7 +95,7 @@ public class PurchaseOrder implements Serializable
    }
 
    // ======================================
-   // =         Lifecycle Methods          =
+   // = Lifecycle Methods =
    // ======================================
 
    @PrePersist
@@ -104,7 +105,7 @@ public class PurchaseOrder implements Serializable
    }
 
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public Long getId()
@@ -248,63 +249,45 @@ public class PurchaseOrder implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
 
    @Override
-   public boolean equals(Object obj)
+   public final boolean equals(Object o)
    {
-      if (this == obj)
-      {
+      if (this == o)
          return true;
-      }
-      if (!(obj instanceof PurchaseOrder))
-      {
-         return false;
-      }
-      PurchaseOrder other = (PurchaseOrder) obj;
-      if (id != null)
-      {
-         if (!id.equals(other.id))
-         {
-            return false;
-         }
-      }
-      return true;
+       if (!(o instanceof PurchaseOrder))
+           return false;
+      PurchaseOrder that = (PurchaseOrder) o;
+      return Objects.equals(orderDate, that.orderDate) &&
+               Objects.equals(customer, that.customer);
    }
 
    @Override
-   public int hashCode()
+   public final int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
+      return Objects.hash(orderDate, customer);
    }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (id != null)
-         result += "id: " + id;
-      result += ", version: " + version;
-      if (orderDate != null)
-         result += ", orderDate: " + orderDate;
-      if (totalWithoutVat != null)
-         result += ", totalWithoutVat: " + totalWithoutVat;
-      if (vatRate != null)
-         result += ", vatRate: " + vatRate;
-      if (vat != null)
-         result += ", vat: " + vat;
-      if (totalWithVat != null)
-         result += ", totalWithVat: " + totalWithVat;
-      if (discountRate != null)
-         result += ", discountRate: " + discountRate;
-      if (discount != null)
-         result += ", discount: " + discount;
-      if (total != null)
-         result += ", total: " + total;
-      return result;
+      return "PurchaseOrder{" +
+               "id=" + id +
+               ", version=" + version +
+               ", orderDate=" + orderDate +
+               ", totalWithoutVat=" + totalWithoutVat +
+               ", vatRate=" + vatRate +
+               ", vat=" + vat +
+               ", totalWithVat=" + totalWithVat +
+               ", discountRate=" + discountRate +
+               ", discount=" + discount +
+               ", total=" + total +
+               ", customer=" + customer +
+               ", orderLines=" + orderLines +
+               ", deliveryAddress=" + deliveryAddress +
+               ", creditCard=" + creditCard +
+               '}';
    }
 }

@@ -1,45 +1,34 @@
 package org.agoncal.application.petstore.model;
 
-import org.agoncal.application.petstore.constraints.NotEmpty;
-import org.agoncal.application.petstore.constraints.Price;
+import java.io.Serializable;
+import java.util.Objects;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.io.Serializable;
+
+import org.agoncal.application.petstore.constraints.NotEmpty;
+import org.agoncal.application.petstore.constraints.Price;
 
 /**
- * @author Antonio Goncalves
- *         http://www.antoniogoncalves.org
- *         --
+ * @author Antonio Goncalves http://www.antoniogoncalves.org --
  */
 
 @Entity
 @Cacheable
-@NamedQueries( {
-      @NamedQuery(name = Item.FIND_BY_PRODUCT_ID, query = "SELECT i FROM Item i WHERE i.product.id = :productId"),
-      @NamedQuery(name = Item.SEARCH, query = "SELECT i FROM Item i WHERE UPPER(i.name) LIKE :keyword OR UPPER(i.product.name) LIKE :keyword ORDER BY i.product.category.name, i.product.name"),
-      @NamedQuery(name = Item.FIND_ALL, query = "SELECT i FROM Item i")
+@NamedQueries({
+         @NamedQuery(name = Item.FIND_BY_PRODUCT_ID, query = "SELECT i FROM Item i WHERE i.product.id = :productId"),
+         @NamedQuery(name = Item.SEARCH, query = "SELECT i FROM Item i WHERE UPPER(i.name) LIKE :keyword OR UPPER(i.product.name) LIKE :keyword ORDER BY i.product.category.name, i.product.name"),
+         @NamedQuery(name = Item.FIND_ALL, query = "SELECT i FROM Item i")
 })
 @XmlRootElement
 public class Item implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Id
@@ -75,7 +64,7 @@ public class Item implements Serializable
    private Product product;
 
    // ======================================
-   // =             Constants              =
+   // = Constants =
    // ======================================
 
    public static final String FIND_BY_PRODUCT_ID = "Item.findByProductId";
@@ -83,7 +72,7 @@ public class Item implements Serializable
    public static final String FIND_ALL = "Item.findAll";
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public Item()
@@ -100,7 +89,7 @@ public class Item implements Serializable
    }
 
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public Long getId()
@@ -174,55 +163,38 @@ public class Item implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
 
    @Override
-   public boolean equals(Object obj)
+   public final boolean equals(Object o)
    {
-      if (this == obj)
-      {
+      if (this == o)
          return true;
-      }
-      if (!(obj instanceof Item))
-      {
+      if (!(o instanceof Item))
          return false;
-      }
-      Item other = (Item) obj;
-      if (id != null)
-      {
-         if (!id.equals(other.id))
-         {
-            return false;
-         }
-      }
-      return true;
+      Item item = (Item) o;
+      return Objects.equals(name, item.name) &&
+               Objects.equals(description, item.description);
    }
 
    @Override
-   public int hashCode()
+   public final int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
+      return Objects.hash(name, description);
    }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (id != null)
-         result += "id: " + id;
-      result += ", version: " + version;
-      if (name != null && !name.trim().isEmpty())
-         result += ", name: " + name;
-      if (description != null && !description.trim().isEmpty())
-         result += ", description: " + description;
-      if (imagePath != null && !imagePath.trim().isEmpty())
-         result += ", imagePath: " + imagePath;
-      if (unitCost != null)
-         result += ", unitCost: " + unitCost;
-      return result;
+      return "Item{" +
+               "id=" + id +
+               ", version=" + version +
+               ", name='" + name + '\'' +
+               ", description='" + description + '\'' +
+               ", imagePath='" + imagePath + '\'' +
+               ", unitCost=" + unitCost +
+               ", product=" + product +
+               '}';
    }
 }

@@ -14,6 +14,7 @@ import org.agoncal.application.petstore.model.PurchaseOrder;
 import org.agoncal.application.petstore.view.shopping.ShoppingCartItem;
 
 import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -87,7 +88,7 @@ public class PurchaseOrderServiceTest
       Address address = new Address("78 Gnu Rd", "Texas", "666", country);
       Customer customer = new Customer("Paul", "Mc Cartney", "pmac", "pmac", "paul@beales.com", address);
       CreditCard creditCard = new CreditCard("1234", CreditCardType.MASTER_CARD, "10/12");
-      Set<OrderLine> orderLines = new HashSet<OrderLine>();
+      Set<OrderLine> orderLines = new HashSet<>();
       PurchaseOrder purchaseOrder = new PurchaseOrder(customer, creditCard, address);
       purchaseOrder.setOrderLines(orderLines);
       purchaseOrder.setDiscount(12.5F);

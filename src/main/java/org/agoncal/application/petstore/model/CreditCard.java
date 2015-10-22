@@ -1,6 +1,7 @@
 package org.agoncal.application.petstore.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,9 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * @author Antonio Goncalves
- *         http://www.antoniogoncalves.org
- *         --
+ * @author Antonio Goncalves http://www.antoniogoncalves.org --
  */
 
 @Embeddable
@@ -19,7 +18,7 @@ public class CreditCard implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Column(length = 30, name = "credit_card_number", nullable = false)
@@ -38,7 +37,7 @@ public class CreditCard implements Serializable
    private String creditCardExpDate;
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public CreditCard()
@@ -53,7 +52,7 @@ public class CreditCard implements Serializable
    }
 
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public String getCreditCardNumber()
@@ -87,19 +86,35 @@ public class CreditCard implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
+
+   @Override
+   public final boolean equals(Object o)
+   {
+      if (this == o)
+         return true;
+      if (!(o instanceof CreditCard))
+         return false;
+      CreditCard that = (CreditCard) o;
+      return Objects.equals(creditCardNumber, that.creditCardNumber) &&
+               Objects.equals(creditCardType, that.creditCardType) &&
+               Objects.equals(creditCardExpDate, that.creditCardExpDate);
+   }
+
+   @Override
+   public final int hashCode()
+   {
+      return Objects.hash(creditCardNumber, creditCardType, creditCardExpDate);
+   }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (creditCardNumber != null && !creditCardNumber.trim().isEmpty())
-         result += "creditCardNumber: " + creditCardNumber;
-      if (creditCardType != null)
-         result += ", creditCardType: " + creditCardType;
-      if (creditCardExpDate != null && !creditCardExpDate.trim().isEmpty())
-         result += ", creditCardExpDate: " + creditCardExpDate;
-      return result;
+      return "CreditCard{" +
+               "creditCardNumber='" + creditCardNumber + '\'' +
+               ", creditCardType=" + creditCardType +
+               ", creditCardExpDate='" + creditCardExpDate + '\'' +
+               '}';
    }
 }

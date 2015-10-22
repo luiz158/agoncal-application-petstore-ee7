@@ -1,9 +1,11 @@
 package org.agoncal.application.petstore.model;
 
-import org.agoncal.application.petstore.constraints.Email;
-import org.agoncal.application.petstore.constraints.Login;
-import org.agoncal.application.petstore.exceptions.ValidationException;
-import sun.misc.BASE64Encoder;
+import java.io.Serializable;
+import java.security.MessageDigest;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Objects;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -11,30 +13,30 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
-import java.security.MessageDigest;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+
+import org.agoncal.application.petstore.constraints.Email;
+import org.agoncal.application.petstore.constraints.Login;
+
+import sun.misc.BASE64Encoder;
 
 /**
- * @author Antonio Goncalves
- *         http://www.antoniogoncalves.org
- *         --
+ * @author Antonio Goncalves http://www.antoniogoncalves.org --
  */
 
 @Entity
-@NamedQueries( {
-      @NamedQuery(name = Customer.FIND_BY_LOGIN, query = "SELECT c FROM Customer c WHERE c.login = :login"),
-      @NamedQuery(name = Customer.FIND_BY_LOGIN_PASSWORD, query = "SELECT c FROM Customer c WHERE c.login = :login AND c.password = :password"),
-      @NamedQuery(name = Customer.FIND_ALL, query = "SELECT c FROM Customer c")
+@NamedQueries({
+         @NamedQuery(name = Customer.FIND_BY_LOGIN, query = "SELECT c FROM Customer c WHERE c.login = :login"),
+         @NamedQuery(name = Customer.FIND_BY_EMAIL, query = "SELECT c FROM Customer c WHERE c.email = :email"),
+         @NamedQuery(name = Customer.FIND_BY_LOGIN_PASSWORD, query = "SELECT c FROM Customer c WHERE c.login = :login AND c.password = :password"),
+         @NamedQuery(name = Customer.FIND_BY_UUID, query = "SELECT c FROM Customer c WHERE c.uuid = :uuid"),
+         @NamedQuery(name = Customer.FIND_ALL, query = "SELECT c FROM Customer c")
 })
 @XmlRootElement
 public class Customer implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Id
@@ -71,6 +73,12 @@ public class Customer implements Serializable
    @Size(min = 1, max = 256)
    private String password;
 
+   @Column(length = 256)
+   @Size(min = 1, max = 256)
+   private String uuid;
+
+   private UserRole role;
+
    @Column(name = "date_of_birth")
    @Temporal(TemporalType.DATE)
    @Past
@@ -84,15 +92,17 @@ public class Customer implements Serializable
    private Address homeAddress = new Address();
 
    // ======================================
-   // =             Constants              =
+   // = Constants =
    // ======================================
 
    public static final String FIND_BY_LOGIN = "Customer.findByLogin";
    public static final String FIND_BY_LOGIN_PASSWORD = "Customer.findByLoginAndPassword";
    public static final String FIND_ALL = "Customer.findAll";
+   public static final String FIND_BY_EMAIL = "Customer.findByEmail";
+   public static final String FIND_BY_UUID = "Customer.findByUUID";
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public Customer()
@@ -100,7 +110,7 @@ public class Customer implements Serializable
    }
 
    public Customer(String firstName, String lastName, String login, String plainTextPassword, String email,
-                   Address address)
+            Address address)
    {
       this.firstName = firstName;
       this.lastName = lastName;
@@ -112,7 +122,7 @@ public class Customer implements Serializable
    }
 
    // ======================================
-   // =         Lifecycle Methods          =
+   // = Lifecycle Methods =
    // ======================================
 
    /**
@@ -141,8 +151,14 @@ public class Customer implements Serializable
       age = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR) + adjust;
    }
 
+   @PrePersist
+   private void digestPassword()
+   {
+      password = digestPassword(password);
+   }
+
    // ======================================
-   // =          Business methods          =
+   // = Business methods =
    // ======================================
 
    /**
@@ -166,25 +182,8 @@ public class Customer implements Serializable
       }
    }
 
-   /**
-    * Given a password, this method then checks if it matches the user
-    *
-    * @param pwd Password
-    * @throws ValidationException thrown if the password is empty or different than the one store in database
-    */
-   public void matchPassword(String pwd)
-   {
-      if (pwd == null || "".equals(pwd))
-         throw new ValidationException("Invalid password");
-      String digestedPwd = digestPassword(pwd);
-
-      // The password entered by the customer is not the same stored in database
-      if (!digestedPwd.equals(password))
-         throw new ValidationException("Passwords don't match");
-   }
-
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public Long getId()
@@ -217,6 +216,26 @@ public class Customer implements Serializable
       this.login = login;
    }
 
+   public UserRole getRole()
+   {
+      return role;
+   }
+
+   public void setRole(UserRole role)
+   {
+      this.role = role;
+   }
+
+   public String getUuid()
+   {
+      return uuid;
+   }
+
+   public void setUuid(String uuid)
+   {
+      this.uuid = uuid;
+   }
+
    public String getPassword()
    {
       return password;
@@ -245,6 +264,11 @@ public class Customer implements Serializable
    public void setLastName(String lastName)
    {
       this.lastName = lastName;
+   }
+
+   public String getFullName()
+   {
+      return firstName + " " + lastName;
    }
 
    public String getTelephone()
@@ -293,63 +317,29 @@ public class Customer implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
 
    @Override
-   public boolean equals(Object obj)
+   public final boolean equals(Object o)
    {
-      if (this == obj)
-      {
+      if (this == o)
          return true;
-      }
-      if (!(obj instanceof Customer))
-      {
+      if (!(o instanceof Customer))
          return false;
-      }
-      Customer other = (Customer) obj;
-      if (id != null)
-      {
-         if (!id.equals(other.id))
-         {
-            return false;
-         }
-      }
-      return true;
+      Customer customer = (Customer) o;
+      return Objects.equals(login, customer.login);
    }
 
    @Override
-   public int hashCode()
+   public final int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
+      return Objects.hash(login);
    }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (id != null)
-         result += "id: " + id;
-      result += ", version: " + version;
-      if (login != null && !login.trim().isEmpty())
-         result += ", login: " + login;
-      if (password != null && !password.trim().isEmpty())
-         result += ", password: " + password;
-      if (firstName != null && !firstName.trim().isEmpty())
-         result += ", firstName: " + firstName;
-      if (lastName != null && !lastName.trim().isEmpty())
-         result += ", lastName: " + lastName;
-      if (telephone != null && !telephone.trim().isEmpty())
-         result += ", telephone: " + telephone;
-      if (email != null && !email.trim().isEmpty())
-         result += ", email: " + email;
-      if (dateOfBirth != null)
-         result += ", dateOfBirth: " + dateOfBirth;
-      if (age != null)
-         result += ", age: " + age;
-      return result;
+      return firstName + ' ' + lastName + " (" + login + ")";
    }
 }

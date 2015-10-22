@@ -1,16 +1,12 @@
 package org.agoncal.application.petstore.model;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import java.io.Serializable;
+import java.util.Objects;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 
 @Entity
 @Cacheable
@@ -19,7 +15,7 @@ public class Country implements Serializable
 {
 
    // ======================================
-   // =             Attributes             =
+   // = Attributes =
    // ======================================
 
    @Id
@@ -56,7 +52,7 @@ public class Country implements Serializable
    private String numcode;
 
    // ======================================
-   // =            Constructors            =
+   // = Constructors =
    // ======================================
 
    public Country()
@@ -73,7 +69,7 @@ public class Country implements Serializable
    }
 
    // ======================================
-   // =         Getters & setters          =
+   // = Getters & setters =
    // ======================================
 
    public Long getId()
@@ -147,57 +143,29 @@ public class Country implements Serializable
    }
 
    // ======================================
-   // =   Methods hash, equals, toString   =
+   // = Methods hash, equals, toString =
    // ======================================
 
    @Override
-   public boolean equals(Object obj)
+   public final boolean equals(Object o)
    {
-      if (this == obj)
-      {
+      if (this == o)
          return true;
-      }
-      if (!(obj instanceof Country))
-      {
+      if (!(o instanceof Country))
          return false;
-      }
-      Country other = (Country) obj;
-      if (id != null)
-      {
-         if (!id.equals(other.id))
-         {
-            return false;
-         }
-      }
-      return true;
+      Country country = (Country) o;
+      return Objects.equals(isoCode, country.isoCode);
    }
 
    @Override
-   public int hashCode()
+   public final int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
+      return Objects.hash(isoCode);
    }
 
    @Override
    public String toString()
    {
-      String result = getClass().getSimpleName() + " ";
-      if (id != null)
-         result += "id: " + id;
-      result += ", version: " + version;
-      if (isoCode != null && !isoCode.trim().isEmpty())
-         result += ", isoCode: " + isoCode;
-      if (name != null && !name.trim().isEmpty())
-         result += ", name: " + name;
-      if (printableName != null && !printableName.trim().isEmpty())
-         result += ", printableName: " + printableName;
-      if (iso3 != null && !iso3.trim().isEmpty())
-         result += ", iso3: " + iso3;
-      if (numcode != null && !numcode.trim().isEmpty())
-         result += ", numcode: " + numcode;
-      return result;
+      return name;
    }
 }

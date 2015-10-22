@@ -3,7 +3,7 @@
 * *Author* : [Antonio Goncalves](http://www.antoniogoncalves.org)
 * *Level* : Intermediate
 * *Technologies* : Java EE 7 (JPA 2.1, CDI 1.1, Bean Validation 1.1, EJB Lite 3.2, JSF 2.2, JAX-RS 2.0), Twitter Bootstrap (Bootstrap 3.x, JQuery 2.x, PrimeFaces 5.x)
-* *Application Servers* : GlassFish 4.x, WildFly 8
+* *Application Servers* : WildFly 8, WildFly 9
 * *Summary* : A Petstore-like application using Java EE 7
 
 [Download the code from GitHub](https://github.com/agoncal/agoncal-application-petstore-ee7)
@@ -21,12 +21,6 @@ If you want to use a different web interface, external frameworks, add some sexy
 
 The only external framework used are [Arquillian](http://arquillian.org/), [Twitter Bootstrap](http://twitter.github.io/bootstrap/) and [PrimeFaces](http://www.primefaces.org/). Arquillian is used for integration testing. Using Maven profile, you can test services, injection, persistence... against different application servers. Twitter Bootstrap and PrimeFaces bring a bit of beauty to the web interface.
 
-## Component diagram
-
-## Glassfish 4.x
-
-[Glassfish 4.x](http://glassfish.java.net) is the [Java EE 7](http://jcp.org/en/jsr/detail?id=342) reference implementation.
-
 ## Compile and package
 
 Being Maven centric, you can compile and package it without tests using `mvn clean compile -Dmaven.test.skip=true`, `mvn clean package -Dmaven.test.skip=true` or `mvn clean install -Dmaven.test.skip=true`. Once you have your war file, you can deploy it.
@@ -36,13 +30,6 @@ Being Maven centric, you can compile and package it without tests using `mvn cle
 Launching tests under [WildFly](http://www.wildfly.org/) is straight forward. You only have to launch WidlFly and execute the tests using the Maven profile :
 
     mvn clean test -Parquillian-wildfly-remote
-
-### Deploy in Glassfish
-
-This sample has been tested with GlassFish 4.x in several modes :
-
-* GlassFish runtime : [download GlassFish](http://glassfish.java.net/public/downloadsindex.html), install it, start GlassFish (typing `asadmin start-`domain) and once the application is packaged deploy it (using the admin console or the command line `asadmin deploy target/applicationPetstore.war`)
-* GlassFish embedded : use the [GlassFish Maven Plugin](http://maven-glassfish-plugin.java.net/) by running `mvn clean package embedded-glassfish:run` (you might have to increase Perm Gen space with `MAVEN_OPTS` set to `-XX:MaxPermSize=128m`)
 
 ## Execute the sample
 
@@ -76,10 +63,6 @@ I use [Silk Icons](http://www.famfamfam.com/lab/icons/silk/) which are in Creati
 ### Arquillian
 
 [Arquillian](http://arquillian.org/) for the integration tests.
-
-### Sonar
-
-[Sonar](http://www.sonarsource.org/) provides services for continuous inspection of code quality. I use it to have some metrics on the Yaps Petstore (and produce, hopefully, not too ugly code with good code coverage). You can also use it to get some metrics. [Download](http://www.sonarsource.org/downloads/), [install](http://docs.codehaus.org/display/SONAR/Installing+Sonar) and run Sonar with `mvn -Pjacoco,glassfish3 install sonar:sonar` (or `mvn -Pjacoco,jboss7 install sonar:sonar` to run on JBoss 7). For integration testing we need to use [JaCoCo](http://www.eclemma.org/jacoco/). To view the code coverage of integartion tests, make sure you add the "Integration test coverage" widget to your Sonar dashboard (you need admin privileges).
 
 ## Developpers
 

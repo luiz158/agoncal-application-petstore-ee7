@@ -11,7 +11,6 @@ import org.agoncal.application.petstore.model.Item;
 import org.agoncal.application.petstore.model.OrderLine;
 import org.agoncal.application.petstore.model.Product;
 import org.agoncal.application.petstore.model.PurchaseOrder;
-import org.agoncal.application.petstore.view.admin.PurchaseOrderBean;
 import javax.inject.Inject;
 
 import org.agoncal.application.petstore.view.shopping.ShoppingCartItem;
@@ -29,7 +28,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.core.Is.*;
 
 @RunWith(Arquillian.class)
 public class PurchaseOrderBeanTest
@@ -85,7 +83,7 @@ public class PurchaseOrderBeanTest
       Address address = new Address("78 Gnu Rd", "Texas", "666", country);
       Customer customer = new Customer("Paul", "Mc Cartney", "pmac", "pmac", "paul@beales.com", address);
       CreditCard creditCard = new CreditCard("1234", CreditCardType.MASTER_CARD, "10/12");
-      Set<OrderLine> orderLines = new HashSet<OrderLine>();
+      Set<OrderLine> orderLines = new HashSet<>();
       PurchaseOrder purchaseOrder = new PurchaseOrder(customer, creditCard, address);
       purchaseOrder.setOrderLines(orderLines);
       purchaseOrder.setDiscount(12.5F);
